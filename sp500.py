@@ -1,14 +1,21 @@
 # Web scraper
 import bs4 as bs
 import datetime as dt
+import matplotlib.pyplot as plt
+from matplotlib import style
+import numpy as np
+
 import os
 import pandas as pd
 import pandas_datareader.data as web
 import pickle
 import requests
 
+style.use('ggplot')
+
 """
     Function specifically created to save the data for the SP500 symbols from Wikipedia
+    Doesn't seem to work
 """
 def save_sp500_symbols():
     # Make a request from the wikipedia page
@@ -29,18 +36,19 @@ def save_sp500_symbols():
     return symbols
 
 def dump_own_stocks():
-    symb = ["BND", "VXUS", "ACB", "FB"]
+    symb = ["BND", "VXUS", "ACB", "FB", "SNAP"]
     with open("myStocks.pickle", "wb") as f:
         pickle.dump(symb, f)
 
 
 def get_data_yahoo(reload_stocks = False):
     # Check if myStocks file exist
+    symbols = ["BND", "VXUS", "ACB", "FB", "SNAP"]
     if reload_stocks:
-        symbols = dump_own_stocks()
-    else:
-        with open("myStocks.pickle", "rb") as f:
-            symbols = pickle.load(f)
+        dump_own_stocks()
+
+    with open("myStocks.pickle", "rb") as f:
+        symbols = pickle.load(f)
 
     if not os.path.exists('stocks_dfs'):
         os.makedirs('stocks_dfs')
@@ -84,4 +92,36 @@ def compile_data():
     print(main_df.head())
     main_df.to_csv('myStocks_joined_closes.csv')
 
+def visualize_data():
+    df = pd.read_csv('myStocks_joined_closes.csv')
+
+    #df['BND'].plot()
+    #plt.show()
+
+    # Generate correlation table
+    df_corr = df.corr()
+
+    data = df_corr.values
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    heatmap = ax.pcolor(data, cmap=plt.cm.RdYlGn)
+    fig.colorbar(heatmap)
+    ax.set_xticks(np.arange(data.shape[1]) + 0.5, minor = False)
+    ax.set_yticks(np.arange(data.shape[0]) + 0.5, minor = False)
+    ax.invert_yaxis()
+    ax.xaxis.tick_top()
+
+    column_labels = df_corr.columns
+    row_labels = df_corr.index
+
+    ax.set_xticklabels(column_labels)
+    ax.set_yticklabels(row_labels)
+    plt.xticks(rotation=90)
+    heatmap.set_clim(-1, 1)
+    plt.tight_layout()
+    plt.show()
+
+get_data_yahoo(True)
 compile_data()
+visualize_data()
