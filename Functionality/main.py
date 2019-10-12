@@ -1,4 +1,3 @@
-
 import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -7,6 +6,10 @@ import pandas_datareader.data as web
 
 from matplotlib import style
 from mpl_finance import candlestick_ohlc
+
+''' 
+    This was a POC for graphing stock price changes over time for the stock VXUS 
+'''
 
 style.use('ggplot')
 

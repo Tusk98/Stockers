@@ -111,6 +111,7 @@ def visualize_data():
     ax.set_yticks(np.arange(data.shape[0]) + 0.5, minor = False)
     ax.invert_yaxis()
     ax.xaxis.tick_top()
+    plt.title("Correlation Matrix between Stocks")
 
     column_labels = df_corr.columns
     row_labels = df_corr.index
