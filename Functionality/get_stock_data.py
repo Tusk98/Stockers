@@ -10,44 +10,62 @@ import pandas as pd
 import pandas_datareader.data as web
 import pickle
 import requests
+from pandas_datareader._utils import RemoteDataError
 
 style.use('ggplot')
 
 """
     Function specifically created to save the data for the SP500 symbols from Wikipedia
-    Doesn't seem to work
+    
+    Takes about 10 minutes for it to run and finish, because it checks if yahoo has data for
+    each ticker found on Wikipedia 
 """
-def save_sp500_symbols():
-    # Make a request from the wikipedia page
-    resp = requests.get('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
-    soup = bs.BeautifulSoup(resp.text, "lxml")
-    table = soup.find('table', {'class':'wikitable sortable'})
-    symbols = []
+def save_sp500_tickers():
+    # Request wikipedia for sp500 companies list
+    resp = requests.get('http://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+    soup = bs.BeautifulSoup(resp.text, 'lxml')
+    table = soup.find('table', {'class': 'wikitable sortable'})
+    tickers = []
 
-    # Take the elements in column [0] since those are the symbols
+    # For each ticker symbol, ping yahoo API for data, if exception raised, don't add it into sp500 array
     for row in table.findAll('tr')[1:]:
-        sym = row.findAll('td')[0].text
-        symbols.append(sym)
+        ticker = row.findAll('td')[0].text
+        ticker = ticker.strip()
 
-    # Dump into sp500symbols.pickle
-    with open("sp500symbols.pickle", "wb") as f:
-        pickle.dump(symbols, f)
+        start = dt.datetime.today() - dt.timedelta(days=1)
+        end = dt.datetime.today()
 
-    return symbols
+        # Ping yahoo
+        try:
+            df = web.DataReader(ticker, 'yahoo', start, end)
+            tickers.append(ticker)
+            print(ticker, " appended to sp500 list")
+        except:
+            print(ticker, " not found with Yahoo finance data")
 
+    # Write tickers array into pickle file
+    with open("sp500tickers.pickle", "wb") as f:
+        pickle.dump(tickers, f)
+
+    return tickers
+
+'''
+    Stocks helper function for future use in specific stocks
+'''
 def dump_own_stocks():
     symb = ["BND", "VXUS", "ACB", "FB", "SNAP"]
     with open("myStocks.pickle", "wb") as f:
         pickle.dump(symb, f)
 
-
+'''
+    Function to import Yahoo finance data into individual CSV files 
+'''
 def get_data_yahoo(reload_stocks = False):
-    # Check if myStocks file exist
-    symbols = ["BND", "VXUS", "ACB", "FB", "SNAP"]
+    # Check reload_stocks parameters
     if reload_stocks:
-        dump_own_stocks()
+        save_sp500_tickers()
 
-    with open("myStocks.pickle", "rb") as f:
+    with open("sp500tickers.pickle", "rb") as f:
         symbols = pickle.load(f)
 
     if not os.path.exists('stocks_dfs'):
@@ -56,11 +74,14 @@ def get_data_yahoo(reload_stocks = False):
     start = dt.datetime(2013,1,1)
     end = dt.datetime.today()
 
-    # For each symbol save their stock info in a the directory stocks_dfs
+    # For each symbol save their stock info in a the directory 'stocks_dfs'
     for ticker in symbols:
         if not os.path.exists('stocks_dfs/{}.csv'.format(ticker)):
             try:
                 df = web.DataReader(ticker, 'yahoo', start, end)
+                if (df is None):
+                    raise Exception
+
                 df.to_csv('stocks_dfs/{}.csv'.format(ticker))
             except:
                 print(ticker, " not found")
@@ -69,13 +90,17 @@ def get_data_yahoo(reload_stocks = False):
 
 
 def compile_data():
-    with open("myStocks.pickle", "rb") as f:
+    with open("sp500tickers.pickle", "rb") as f:
         symbols = pickle.load(f)
 
     main_df = pd.DataFrame()
 
     for count, ticker in enumerate(symbols):
-        df = pd.read_csv('stocks_dfs/{}.csv'.format(ticker))
+        try:
+            df = pd.read_csv('stocks_dfs/{}.csv'.format(ticker))
+        except:
+            print('stocks_dfs/{}.csv'.format(ticker))
+
         df.set_index('Date', inplace=True)
 
         df.rename(columns = {'Adj Close' : ticker}, inplace=True)
@@ -90,10 +115,10 @@ def compile_data():
             print(count)
 
     print(main_df.head())
-    main_df.to_csv('myStocks_joined_closes.csv')
+    main_df.to_csv('sp500_joined_closes.csv')
 
 def visualize_data():
-    df = pd.read_csv('myStocks_joined_closes.csv')
+    df = pd.read_csv('sp500_joined_closes.csv')
 
     #df['BND'].plot()
     #plt.show()
@@ -123,6 +148,7 @@ def visualize_data():
     plt.tight_layout()
     plt.show()
 
-get_data_yahoo(True)
+save_sp500_tickers()
+get_data_yahoo()
 compile_data()
 visualize_data()
