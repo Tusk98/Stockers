@@ -151,4 +151,4 @@ def visualize_data():
 save_sp500_tickers()
 get_data_yahoo()
 compile_data()
-visualize_data()
+
