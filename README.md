@@ -2,7 +2,27 @@
 
 This is a project meant for using some basic machine learning / data analysis on stock market data. 
 
-main.py has a POC for graphing stock price change over time for the stock VXUS
-In the folder that contains main.py and VXUS.csv, run 
 
-```python3 main.py```
+main.py has a POC for graphing stock price change over time for the stock VXUS
+In the folder that contains main.py and VXUS.csv, run
+
+```
+~ $ python3 main.py
+```
+
+The file get_stock_data.py loads the SP500 list of companies from Wikipedia and gets their stock information
+from 2013 to whatever the date is when you run the program. Because of updating the SP500 list and their
+stock prices, it will take at least several minutes to finish running the program.
+
+```
+~ $ python3 get_stock_data
+```
+
+## Dependencies
+ - golang (preferably 1.12+, older versions require you to manually download dependencies via `go get`)
+   - [beatifulsoup4](https://pypi.org/project/beautifulsoup4/)
+   - [matplotlib](https://pypi.org/project/matplotlib/)
+   - [numpy](https://pypi.org/project/numpy/)
+   - [pandas](https://pandas.pydata.org/)
+
+## Features
