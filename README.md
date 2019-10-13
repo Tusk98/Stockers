@@ -19,7 +19,7 @@ stock prices, it will take at least several minutes to finish running the progra
 ```
 
 ## Dependencies
- - golang (preferably 1.12+, older versions require you to manually download dependencies via `go get`)
+ - Python 3.X
    - [beatifulsoup4](https://pypi.org/project/beautifulsoup4/)
    - [matplotlib](https://pypi.org/project/matplotlib/)
    - [numpy](https://pypi.org/project/numpy/)
