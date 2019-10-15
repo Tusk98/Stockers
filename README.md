@@ -2,6 +2,14 @@
 
 This is a project meant for using some basic machine learning / data analysis on stock market data. 
 
+## Dependencies
+ - Python 3.X
+   - [beatifulsoup4](https://pypi.org/project/beautifulsoup4/)
+   - [matplotlib](https://pypi.org/project/matplotlib/)
+   - [numpy](https://pypi.org/project/numpy/)
+   - [pandas](https://pandas.pydata.org/)
+   - [sklearn](https://scikit-learn.org/stable/install.html)
+
 
 main.py has a POC for graphing stock price change over time for the stock VXUS
 In the folder that contains main.py and VXUS.csv, run
@@ -20,11 +28,6 @@ After gathering stock data it will present a correlation matrix of the SP500 com
 ~ $ python3 get_stock_data
 ```
 
-## Dependencies
- - Python 3.X
-   - [beatifulsoup4](https://pypi.org/project/beautifulsoup4/)
-   - [matplotlib](https://pypi.org/project/matplotlib/)
-   - [numpy](https://pypi.org/project/numpy/)
-   - [pandas](https://pandas.pydata.org/)
+
 
 ## Features

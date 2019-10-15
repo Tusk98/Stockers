@@ -4,7 +4,9 @@ import numpy as np
 import pandas as pd
 import pickle
 
-
+from sklearn import svm, neighbors
+from sklearn.ensemble import VotingClassifier, RandomForestClassifier
+from sklearn.model_selection import cross_validate
 
 def process_data_for_labels(ticker):
     hm_days = 7
