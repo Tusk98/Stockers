@@ -122,6 +122,8 @@ if __name__ == "__main__":
        print ('Usage:	' + os.path.basename(__file__) + ' ticker ')
        print ('Options:')
        print ('\t--ticker=n (such as FB, SNAP, etc.)')
+       print ('Example:')
+       print ('\t python3 ml_classifiers.py --ticker FB')
        sys.exit(2)
   # extract parameters
   try:
