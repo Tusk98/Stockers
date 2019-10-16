@@ -1,1 +1,4 @@
 *.idea/
+django/stockers_site/stockers_site/__pycache__/
+
+
